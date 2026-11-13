@@ -18,15 +18,15 @@ from app.users.users_models import UserModel, UserSessionModel
 
 UNAUTHORIZED_MESSAGE: Final[str] = "Debes iniciar sesión para acceder a este recurso"
 
-# Lee la cookie `sid`. Además agrega el botón "Authorize" en /docs.
+#Lee la cookie `sid`. Además agrega el botón "Authorize" en /docs.
 session_cookie = APIKeyCookie(name=SESSION_COOKIE_NAME, auto_error=False)
 
 
 def start_session(
     db: Session, response: Response, user: UserModel, previous_id: str | None
 ) -> None:
-    # Siempre se crea un id de sesión nuevo para evitar ataques de fijación de
-    # sesión. La sesión anterior (si había) y las expiradas se eliminan.
+    #Siempre se crea un id de sesión nuevo para evitar ataques de fijación de
+    #sesión. La sesión anterior (si había) y las expiradas se eliminan.
     db.execute(
         delete(UserSessionModel).where(
             (UserSessionModel.id == previous_id)
@@ -62,11 +62,21 @@ def destroy_session(db: Session, response: Response, session_id: str | None) -> 
     response.delete_cookie(SESSION_COOKIE_NAME)
 
 
+def block_user_and_revoke_sessions(db: Session, user: UserModel) -> None:
+    user.isBlocked = True
+
+    db.execute(
+        delete(UserSessionModel).where(UserSessionModel.userId == user.id)
+    )
+
+    db.commit()
+
+
 def require_session(
     db: DbSession,
     session_id: Annotated[str | None, Depends(session_cookie)],
 ) -> UserSessionModel:
-    # Deja pasar la petición solo si la cookie apunta a una sesión vigente.
+    #Deja pasar la petición solo si la cookie apunta a una sesión vigente.
     session = None
 
     if session_id:
