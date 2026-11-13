@@ -43,6 +43,12 @@ class AuthService:
                 detail="Correo o contraseña incorrectos",
             )
 
+        if user.isBlocked:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Cuenta bloqueada",
+            )
+
         return user
 
 

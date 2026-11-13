@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy import DateTime, ForeignKey, String, false
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.shared.database import Base, TimestampMixin
@@ -16,6 +16,9 @@ class UserModel(TimestampMixin, Base):
     name: Mapped[str] = mapped_column(String(100))
     email: Mapped[str] = mapped_column(String(255), unique=True)
     passwordHash: Mapped[str] = mapped_column("password_hash", String(255))
+    isBlocked: Mapped[bool] = mapped_column(
+        "is_blocked", server_default=false(), nullable=False
+    )
 
 
 # Sesiones iniciadas. Al navegador solo llega una cookie con el `id` de la

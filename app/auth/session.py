@@ -1,6 +1,7 @@
 import secrets
 from datetime import timedelta
 from typing import Annotated, Final
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, Response, status
 from fastapi.security import APIKeyCookie
@@ -60,6 +61,17 @@ def destroy_session(db: Session, response: Response, session_id: str | None) -> 
         db.commit()
 
     response.delete_cookie(SESSION_COOKIE_NAME)
+
+
+# Borra todas las sesiones del usuario. No hace commit: lo hace quien la llama.
+def revoke_user_sessions(db: Session, user_id: UUID) -> None:
+    db.execute(delete(UserSessionModel).where(UserSessionModel.userId == user_id))
+
+
+def block_user_and_revoke_sessions(db: Session, user: UserModel) -> None:
+    user.isBlocked = True
+    revoke_user_sessions(db, user.id)
+    db.commit()
 
 
 def require_session(
