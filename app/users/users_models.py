@@ -7,7 +7,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.shared.database import Base, TimestampMixin
 
 
-#Usuarios que pueden iniciar sesión en la API
+# Usuarios que pueden iniciar sesión en la API (no confundir con Student,
+# que es el recurso del CRUD).
 class UserModel(TimestampMixin, Base):
     __tablename__ = "users"
 
@@ -20,8 +21,8 @@ class UserModel(TimestampMixin, Base):
     )
 
 
-#Sesiones iniciadas. Al navegador solo llega una cookie con el `id` de la
-#sesión (un valor aleatorio); el resto de los datos queda en esta tabla.
+# Sesiones iniciadas. Al navegador solo llega una cookie con el `id` de la
+# sesión (un valor aleatorio); el resto de los datos queda en esta tabla.
 class UserSessionModel(Base):
     __tablename__ = "user_sessions"
 

@@ -35,7 +35,8 @@ class AuthService:
     def login(self, data: LoginDto) -> UserModel:
         user = self.users_repository.find_by_email(data.email)
 
-        #Usa el mismo mensaje para un correo desconocido y una contraseña incorrecta.
+        # Mismo mensaje si el correo no existe o la contraseña es incorrecta,
+        # para no revelar qué correos están registrados.
         if user is None or not verify_password(data.password, user.passwordHash):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -51,4 +52,4 @@ class AuthService:
         return user
 
 
-AuthServiceDep = Annotated[AuthService, Depends()]  
+AuthServiceDep = Annotated[AuthService, Depends()]
